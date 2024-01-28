@@ -10,6 +10,15 @@ PASSWORD_FILE = "passwd.txt"
 current_user = None
 
 def login():
+
+    """
+    Log in a user by prompting for a username and password. The entered
+    username and encrypted password are validated against stored user
+    credentials. If the credentials are valid, the user is granted access.
+
+    Raises:
+        Any exceptions raised by read_passwords() or encrypt_password().
+    """
     global current_user
     
     username = input("User: ").lower()
@@ -25,6 +34,11 @@ def login():
         print("Access denied.")
 
 def display_current_user():
+
+    """
+    Display the currently logged-in user. If no user is logged in, indicate
+    that no user is logged in."""
+    
     global current_user
     
     if current_user is None:
