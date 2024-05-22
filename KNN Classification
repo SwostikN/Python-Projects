@@ -1,0 +1,63 @@
+import csv
+import math
+import matplotlib.pyplot as plt
+import pandas as pd
+
+class my_classifier:
+    def __init__(self, name):
+        self.k = 5
+        self.name = name
+        print(f"Welcome to the Classifier written by {'Swostik Nepal'}. This classifier class can perform kNN classification and plot the results for you. How awesome!")
+
+    def euclidean_distance(self, point1, point2):
+        return math.sqrt(sum((a - b) ** 2 for a, b in zip(point1, point2)))
+
+    def k_nearest_neighbors(self, input_data):
+        X = []
+        Y = []
+        with open('Entrance_Selection.csv', newline='') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',')
+            next(spamreader)
+            for row in spamreader:
+                Y.append(int(row[0]))  # Convert admit label to integer (0 or 1)
+                X.append([float(val) for val in row[1:4]])  # Use only the first three features (gre and gpa and rank)
+
+        distances = [(self.euclidean_distance(input_data, x), y) for x, y in zip(X, Y)]
+        distances.sort(key=lambda x: x[0])
+
+        k_nearest = distances[:self.k]
+        labels = [label for _, label in k_nearest]
+
+        # Classify the new student based on majority vote of K neighbors
+        return 1 if sum(labels) >= self.k / 2 else 0
+
+    def my_plot(self, feature1, feature2, data_point=None):
+        try:
+            data = pd.read_csv('Entrance_Selection.csv')
+
+            if feature1 not in data.columns or feature2 not in data.columns:
+                raise ValueError("Invalid feature names.")
+
+            plt.scatter(data[feature1], data[feature2], label="Data Points")
+
+            if data_point is not None:
+                plt.scatter(data_point[0], data_point[1], color='red', label="New Data Point")
+
+            plt.xlabel(feature1)
+            plt.ylabel(feature2)
+            plt.legend()
+            plt.show()
+
+        except Exception as e:
+            raise e
+
+
+if __name__ == "__main__":
+    name = "Swostik"
+    classifier = my_classifier(name)
+
+    new_student = [665, 3.67,3]  # We use only the first two features (gre and gpa)
+    output_class = classifier.k_nearest_neighbors(input_data=new_student)
+    print(f"Output class for the new student is: {output_class}")
+
+    classifier.my_plot('gre', 'gpa', data_point=[new_student[0], new_student[1]])
