@@ -1,0 +1,41 @@
+#1
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data = pd.read_csv('cities.csv')
+
+continent_area = data.groupby('continent', as_index=False)['area'].sum()
+
+
+plt.figure(figsize=(10, 6))
+plt.bar(continent_area['continent'], continent_area['area'])
+plt.xlabel('Continent')
+plt.ylabel('Area (in landmass)')
+plt.title('Area in Landmass Covered by Each Continent')
+plt.show()
+
+#2
+cities_highest_elevation = data.groupby('continent').apply(lambda x: x.nlargest(1, 'elevation'))
+cities_lowest_elevation = data.groupby('continent').apply(lambda x: x.nsmallest(1, 'elevation'))
+
+print("Cities with highest elevation for each continent:")
+print(cities_highest_elevation[['name', 'country', 'continent', 'elevation', 'lat', 'long']])
+
+print("\nCities with lowest elevation for each continent:")
+print(cities_lowest_elevation[['name', 'country', 'continent', 'elevation', 'lat', 'long']])
+
+#3
+if 'population' in data.columns and 'area' in data.columns:
+    data['PopulationDensity'] = data['population'] / data['area']
+else:
+    print("Population or Area columns are missing in the data.")
+    exit()  # Exit the program if the required columns are missing
+
+cities_highest_density = data.nlargest(5, 'PopulationDensity')
+cities_lowest_density = data.nsmallest(5, 'PopulationDensity')
+
+print("\nCities with highest population density:")
+print(cities_highest_density[['name', 'country', 'continent', 'PopulationDensity']])
+
+print("\nCities with lowest population density:")
+print(cities_lowest_density[['name', 'country', 'continent', 'PopulationDensity']])
